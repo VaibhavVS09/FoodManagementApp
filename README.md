@@ -18,7 +18,7 @@ A robust, console-based CRUD application designed for cafeteria management to tr
 
 ## 📺 Project Walkthrough
 
-[![Watch the Demo Video](https://img.icons8.com)](YOUR_GOOGLE_DRIVE_LINK)
+[![Watch the Demo Video](https://img.icons8.com)](https://drive.google.com/file/d/1Cni3126hZAF6OflI60B8tF0IlRVFDMNr/view?usp=sharing)
 
 _Click the icon above to watch the project demo on Google Drive._
 
