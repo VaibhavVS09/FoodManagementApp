@@ -37,9 +37,20 @@ using namespace std;
 // Base Exception class(Exception Handling)
 class FoodException : public exception
 {
+private:
+  string message;
+
 public:
-  virtual const char *what() = 0;
+  FoodException(string messages)
+  {
+    this->message = message;
+  }
+  const char *what()
+  {
+    return message.c_str();
+  }
 };
+/*
 // Food not found exception
 class FoodNotFoundException : public FoodException
 {
@@ -111,7 +122,8 @@ public:
   {
     return "Oop's Error Occurred While Reading Food Data (Corrupted File).";
   }
-};
+};*/
+
 // Food class store all required food information
 class Food
 {
@@ -175,7 +187,7 @@ double calculateAvarge(vector<Food> &fm)
   double sum = 0;
   if (fm.empty())
   {
-    throw NoAddedFood();
+    throw FoodException("Oop's No Food Items Added Yet.\n");
   }
   for (vector<Food>::iterator it = fm.begin(); it != fm.end(); it++)
   {
@@ -189,24 +201,24 @@ void saveInFile(vector<Food> &fm)
   fstream foodFile;
   try
   {
-    foodFile.open("./FoodFile/foodInfo.txt", ios::app);
+    foodFile.open("./FoodFile/foodInfo.txt", ios::out | ios::trunc);
     if (foodFile.is_open())
     {
       for (auto &f : fm)
       {
         foodFile << f.getFid() << " " << f.getFname() << " " << f.getFcalories() << " " << f.getFcategory() << "\n";
         if (foodFile.fail())
-          throw FileWriteException();
+          throw FoodException("Oop's Failed While Writing Data To File.");
       }
       cout << "Data Saved Successfully To File\n";
       foodFile.close();
     }
     else
     {
-      throw FileOpenException();
+      throw FoodException("Oop's Could Not Open foodFile.txt File.");
     }
   }
-  catch (FileOpenException &fe)
+  catch (FoodException &fe)
   {
     cout << "File Error: " << fe.what();
   }
@@ -230,17 +242,17 @@ void loadFromFile(vector<Food> &fm)
       // Cheking if stop because of bad data
       if (!foodFile.eof() && foodFile.fail())
       {
-        throw FileNotReadableException();
+        throw FoodException("Oop's Error Occurred While Reading Food Data (Corrupted File).");
       }
       foodFile.close();
       cout << "Data Loaded Successfully From File\n";
     }
     else
     {
-      throw FileOpenException();
+      throw FoodException("Oop's Could Not Open foodFile.txt File.");
     }
   }
-  catch (FileNotReadableException &fn)
+  catch (FoodException &fn)
   {
     cout << "File Error" << fn.what();
   }
@@ -255,13 +267,16 @@ int main()
   vector<Food> fm;
   // Loadding Data From File To Vector
   loadFromFile(fm);
+
+  // View All Food Info From File To Vector:
+  cout << "\nPresent Data From File:\n";
+  cout << left << setw(10) << "Food Id " << setw(10) << "Food Name " << setw(15) << "Food Calories" << setw(10) << "Food Category\n";
+  for (auto &obj : fm)
+  {
+    obj.display();
+  }
   try
   {
-    cout << "How many food do you want to add:\n";
-    if (!(cin >> len))
-    {
-      throw invalid_argument("Please Enter Only Number:");
-    }
 
     do
     {
@@ -293,6 +308,11 @@ int main()
       {
       case 1:
       { // Add Food Info:
+        cout << "\nHow many food do you want to add:\n";
+        if (!(cin >> len))
+        {
+          throw invalid_argument("Please Enter Only Number:");
+        }
         for (int i = 0; i < len; i++)
         {
           cout << "..... " << (i + 1) << "Food Info .....\n";
@@ -335,7 +355,7 @@ int main()
           }
         }
         if (!flag)
-          throw FoodNotFoundException();
+          throw FoodException("Oop's Could Not Open foodFile.txt File.");
         break;
       }
       case 4:
@@ -357,14 +377,14 @@ int main()
           }
         }
         if (!flag)
-          throw FoodNotFoundException();
+          throw FoodException("Oop's  Food Not Found:\n");
         break;
       }
       case 5:
       { // Highest And Lowest Calorie Food
         if (fm.empty())
         {
-          throw NotAbalToFind();
+          throw FoodException("Oop's Not Able To Find Highest And Lowest Calorie Food:\n");
         }
         // Creating pointer to store the address for min and max value
         auto maxIt = fm.begin();
@@ -440,7 +460,7 @@ int main()
           }
         }
         if (!flag)
-          throw NoFood();
+          throw FoodException("Oop's  Food Not Found:\n");
         break;
       }
       case 10:
@@ -456,7 +476,7 @@ int main()
           }
         }
         if (!flag)
-          throw NoBetweenRange();
+          throw FoodException("Oop's No Food Between Giving Range:\n");
         break;
       }
       case 11:
@@ -471,7 +491,7 @@ int main()
           }
         }
         if (!flag)
-          throw FoodNotFoundException();
+          throw FoodException("Oop's  Food Not Found:\n");
         break;
       }
       case 12:
@@ -486,7 +506,7 @@ int main()
           }
         }
         if (!flag)
-          throw FoodNotFoundException();
+          throw FoodException("Oop's  Food Not Found:\n");
         break;
       }
       case 13:
@@ -503,7 +523,7 @@ int main()
           }
         }
         if (!flag)
-          throw FoodNotFoundException();
+          throw FoodException("Oop's  Food Not Found:\n");
         break;
       }
       case 14:
@@ -521,7 +541,7 @@ int main()
           }
         }
         if (!flag)
-          throw FoodNotFoundException();
+          throw FoodException("Oop's  Food Not Found:\n");
         break;
       }
       case 15:
