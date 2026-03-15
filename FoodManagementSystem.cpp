@@ -791,68 +791,72 @@ public:
   ~FoodManger() {}
 };
 
-// Admin Login Logic
-bool adminLogin()
+// Login Class
+class LoginLogic
 {
+private:
   string username, password;
   string filerUser, filePass;
   const string AdminFile = "./FoodFile/admin.txt";
-  cout << "\n\n===== ADMIN LOGIN =====\n\n";
-  cout << "Enter UserName: \n";
-  cin >> username;
-  cout << "Enter Password:\n";
-  cin >> password;
-  // File Checking
-  fstream login;
-  login.open(AdminFile, ios::in);
-  if (!login)
-  {
-    cout << "Admin File Not Found\n";
-    return false;
-  }
-  while (login >> filerUser >> filePass)
-  {
-    if (username == filerUser && password == filePass)
-    {
-      cout << "Admin Login Successful\n";
-      return true;
-    }
-  }
-  cout << "Invalid Admin Credentail's\n";
-  return false;
-}
-
-// User Login Logic
-bool userLogin()
-{
-  string username, password;
-  string filerUser, filePass;
   const string UserFile = "./FoodFile/users.txt";
-  cout << "\n\n===== USER LOGIN =====\n\n";
-  cout << "Enter UserName: \n";
-  cin >> username;
-  cout << "Enter Password:\n";
-  cin >> password;
-  // File checking
-  fstream login;
-  login.open(UserFile, ios::in);
-  if (!login)
+
+public:
+  // Admin Login Logic
+  bool adminLogin()
   {
-    cout << "User File Not Found\n";
+    cout << "\n\n===== ADMIN LOGIN =====\n\n";
+    cout << "Enter UserName: \n";
+    cin >> username;
+    cout << "Enter Password:\n";
+    cin >> password;
+    // File Checking
+    fstream login;
+    login.open(AdminFile, ios::in);
+    if (!login)
+    {
+      cout << "Admin File Not Found\n";
+      return false;
+    }
+    while (login >> filerUser >> filePass)
+    {
+      if (username == filerUser && password == filePass)
+      {
+        cout << "Admin Login Successful\n";
+        return true;
+      }
+    }
+    cout << "Invalid Admin Credentail's\n";
     return false;
   }
-  while (login >> filerUser >> filePass)
+  // User Login Logic
+  bool userLogin()
   {
-    if (username == filerUser && password == filePass)
+    cout << "\n\n===== USER LOGIN =====\n\n";
+    cout << "Enter UserName: \n";
+    cin >> username;
+    cout << "Enter Password:\n";
+    cin >> password;
+    // File checking
+    fstream login;
+    login.open(UserFile, ios::in);
+    if (!login)
     {
-      cout << "User Login Successful\n";
-      currentUser = username;
-      return true;
+      cout << "User File Not Found\n";
+      return false;
     }
+    while (login >> filerUser >> filePass)
+    {
+      if (username == filerUser && password == filePass)
+      {
+        cout << "User Login Successful\n";
+        currentUser = username;
+        return true;
+      }
+    }
+    cout << "Invalid Usre Credentail's\n";
+    return false;
   }
-  cout << "Invalid Usre Credentail's\n";
-  return false;
-}
+};
 
 // main function
 int main()
@@ -869,16 +873,18 @@ int main()
   cout << "3......EXIT......\n";
   cout << "Enter Choice:\n";
   cin >> logChoice;
+  // LoginLogic Class Object
+  LoginLogic ll;
   if (logChoice == 1)
   {
-    if (adminLogin())
+    if (ll.adminLogin())
       logChoice = 1;
     else
       return 0;
   }
   else if (logChoice == 2)
   {
-    if (userLogin())
+    if (ll.userLogin())
       logChoice = 2;
     else
       return 0;
