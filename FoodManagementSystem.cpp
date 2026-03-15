@@ -687,6 +687,7 @@ public:
     int amount, addAmt;
     fstream wallet;
     fstream temp;
+    flag = false;
     wallet.open(walletFile, ios::in);
     temp.open("./FoodFile/temp.txt", ios::out);
     while (wallet >> user >> amount)
@@ -699,9 +700,12 @@ public:
         amount += addAmt;
         cout << "Amount Added Successfully\n";
         cout << "New Wallet Balance: " << amount << "\n";
+        flag = true;
       }
       temp << user << " " << amount << "\n";
     }
+    if (!flag)
+      cout << "User Not Found\n";
     wallet.close();
     temp.close();
     remove("./FoodFile/wallet.txt");
@@ -799,6 +803,9 @@ private:
   string filerUser, filePass;
   const string AdminFile = "./FoodFile/admin.txt";
   const string UserFile = "./FoodFile/users.txt";
+  const string walletFile = "./FoodFile/wallet.txt";
+  bool flag = false;
+  FoodManger fm;
 
 public:
   // Admin Login Logic
@@ -856,13 +863,60 @@ public:
     cout << "Invalid Usre Credentail's\n";
     return false;
   }
+  // Add user's
+  void addNewUser(string username, int password)
+  {
+    fstream create, user;
+    fstream wallet;
+    flag = false;
+    user.open(UserFile, ios::in);
+    while (user >> filerUser)
+    {
+      if (username == filerUser)
+      {
+        flag = true;
+        break;
+      }
+    }
+    if (flag)
+    {
+      throw FoodException("UserName Alredy Exist\n");
+    }
+    else
+    {
+      create.open(UserFile, ios::app);
+      wallet.open(walletFile, ios::app);
+      if (create.is_open())
+      {
+        create << username
+               << " "
+               << password
+               << "\n";
+        if (create.fail())
+          throw FoodException("Oop's Failed While Writing Data To File.");
+      }
+      cout << "New User Created Successfuly\n";
+      if (wallet.is_open())
+      {
+        wallet << username
+               << " "
+               << 0
+               << "\n";
+        if (create.fail())
+          throw FoodException("Oop's Failed While Writing Data To File.");
+      }
+      create.close();
+      wallet.close();
+      fm.addAmountIntoWallet(username);
+    }
+  }
 };
 
 // main function
 int main()
 {
-  int again, choice, startRange, endRange, calories, logChoice, addAmount;
-  string fname;
+  int again, choice, startRange, endRange, calories, logChoice, addAmount, pass;
+  string fname, user;
 
   // Logic Control App
   FoodManger manger;
@@ -924,12 +978,9 @@ int main()
         cout << "15--->Count Food Category\n";
         cout << "16--->Find Food With Exact Calories\n";
         cout << "17-->Show Total Calories of All Foods\n";
-        cout << "18--->Buy Food\n";
-        cout << "19--->View Purchase History\n";
         cout << "20--->Daily Sales Report\n";
-        cout << "21--->Show Wallet Balance\n";
-        cout << "22--->Add Amount Into Wallet\n";
-        cout << "23--->.....EXIT.....\n";
+        cout << "23--->Add New User\n";
+        cout << "24--->.....EXIT.....\n";
       }
       else if (logChoice == 2)
       {
@@ -951,7 +1002,7 @@ int main()
         cout << "19--->View Purchase History\n";
         cout << "21--->Show Wallet Balance\n";
         cout << "22--->Add Amount Into Wallet\n";
-        cout << "23--->.....EXIT.....\n";
+        cout << "24--->.....EXIT.....\n";
       }
 
       cout << "Enter the choice:\n";
@@ -959,8 +1010,12 @@ int main()
       {
         throw invalid_argument("Invaild Menu Selection: Please Enter Number.");
       }
-
-      if ((logChoice == 2) && (choice == 1 || choice == 4 || choice == 14 || choice == 20))
+      if ((logChoice == 1) && (choice == 18 || choice == 19 || choice == 21 || choice == 22))
+      {
+        cout << "Access Denied:\n Only User Feature\n";
+        continue;
+      }
+      if ((logChoice == 2) && (choice == 1 || choice == 4 || choice == 14 || choice == 20 || choice == 23))
       {
         cout << "Access Denied:\n Only Admin Feature\n";
         continue;
@@ -1095,6 +1150,15 @@ int main()
         break;
       }
       case 23:
+      { // Add New User
+        cout << "Enter User Name For New Account\n";
+        cin >> user;
+        cout << "Enter The Password\n";
+        cin >> pass;
+        ll.addNewUser(user, pass);
+        break;
+      }
+      case 24:
       { // Saving Data And Ending Program
         manger.savingDataAndEnd();
         return 0;
@@ -1104,7 +1168,7 @@ int main()
         cout << "\nWrong Choice\n";
       }
       }
-    } while (choice < 24);
+    } while (choice < 25);
   }
   // specific custome exception
   catch (FoodException &fe)
